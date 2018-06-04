@@ -79,16 +79,18 @@ class TestSort {
 
 		test.delete_persons();
 
-		test.add_person("omar", "ahmed", "old", "011111111", "omar@gmail.com", 20);
-		test.add_person("amr", "ayman", "new", "012222222", "amr@gmail.com", 21);
+		test.add_person("c", "a", "a", "b", "b", 3);
+		test.add_person("b", "b", "c", "a", "c", 1);
+		test.add_person("a", "c", "b", "c", "a", 2);
 
 		// first name
 		test.sort_persons("first name");
 
 		v = jsonload(test.path);
 
-		person[] exp = { new person("amr", "ayman", "new", "012222222", "amr@gmail.com", 21),
-				new person("omar", "ahmed", "old", "011111111", "omar@gmail.com", 20) };
+		person[] exp = { new person("a", "c", "b", "c", "a", 2),
+				new person("b", "b", "c", "a", "c", 1),
+				new person("c", "a", "a", "b", "b", 3)};
 
 		for (int i = 0; i < v.size(); i++) {
 			person act = (person) v.elementAt(i);
@@ -100,9 +102,10 @@ class TestSort {
 
 		v = jsonload(test.path);
 
-		exp[1] = new person("amr", "ayman", "new", "012222222", "amr@gmail.com", 21);
-		exp[0] = new person("omar", "ahmed", "old", "011111111", "omar@gmail.com", 20);
-
+		exp[0] = new person("c", "a", "a", "b", "b", 3);
+		exp[1] = new person("b", "b", "c", "a", "c", 1);
+		exp[2] = new person("a", "c", "b", "c", "a", 2);
+		
 		for (int i = 0; i < v.size(); i++) {
 			person act = (person) v.elementAt(i);
 			assertPerson(exp[i], act);
@@ -113,9 +116,10 @@ class TestSort {
 
 		v = jsonload(test.path);
 
-		exp[0] = new person("amr", "ayman", "new", "012222222", "amr@gmail.com", 21);
-		exp[1] = new person("omar", "ahmed", "old", "011111111", "omar@gmail.com", 20);
-
+		exp[0] = new person("c", "a", "a", "b", "b", 3);
+		exp[2] = new person("b", "b", "c", "a", "c", 1);
+		exp[1] = new person("a", "c", "b", "c", "a", 2);
+		
 		for (int i = 0; i < v.size(); i++) {
 			person act = (person) v.elementAt(i);
 			assertPerson(exp[i], act);
@@ -126,9 +130,10 @@ class TestSort {
 
 		v = jsonload(test.path);
 
-		exp[1] = new person("amr", "ayman", "new", "012222222", "amr@gmail.com", 21);
-		exp[0] = new person("omar", "ahmed", "old", "011111111", "omar@gmail.com", 20);
-
+		exp[1] = new person("c", "a", "a", "b", "b", 3);
+		exp[0] = new person("b", "b", "c", "a", "c", 1);
+		exp[2] = new person("a", "c", "b", "c", "a", 2);
+		
 		for (int i = 0; i < v.size(); i++) {
 			person act = (person) v.elementAt(i);
 			assertPerson(exp[i], act);
@@ -139,9 +144,10 @@ class TestSort {
 
 		v = jsonload(test.path);
 
-		exp[0] = new person("amr", "ayman", "new", "012222222", "amr@gmail.com", 21);
-		exp[1] = new person("omar", "ahmed", "old", "011111111", "omar@gmail.com", 20);
-
+		exp[1] = new person("c", "a", "a", "b", "b", 3);
+		exp[2] = new person("b", "b", "c", "a", "c", 1);
+		exp[0] = new person("a", "c", "b", "c", "a", 2);
+		
 		for (int i = 0; i < v.size(); i++) {
 			person act = (person) v.elementAt(i);
 			assertPerson(exp[i], act);
@@ -153,9 +159,10 @@ class TestSort {
 
 		v = jsonload(test.path);
 
-		exp[1] = new person("amr", "ayman", "new", "012222222", "amr@gmail.com", 21);
-		exp[0] = new person("omar", "ahmed", "old", "011111111", "omar@gmail.com", 20);
-
+		exp[2] = new person("c", "a", "a", "b", "b", 3);
+		exp[0] = new person("b", "b", "c", "a", "c", 1);
+		exp[1] = new person("a", "c", "b", "c", "a", 2);
+		
 		for (int i = 0; i < v.size(); i++) {
 			person act = (person) v.elementAt(i);
 			assertPerson(exp[i], act);
