@@ -12,22 +12,22 @@ first you can change the path of the JSON file in Task class constructor ( by de
 
 you have 6 comands available to you when you run the program
 
-#####-add 
+#####add 
 here you can add a person's data to the file, after entering add you will be asked to enter the data of the person.
 
-#####-update
+#####update
 here you can update a person's data by choosing the number of the person you want to update (0 based) then enter the new data for this person.
 
-#####-list
+#####list
 here the list of persons found in the file so far will be listed infront of you in the console
 
-#####-filter
+#####filter
 here you will choose the field that you want to see, then the persons' data will be listed but with the chosen field only
 
-#####-sort
+#####sort
 here you will choose the field that you want the data to be sorted accourding to
 
-#####-delete
+#####delete
 here you can delete the file
 
 **Please note that the fields available are**
