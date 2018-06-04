@@ -45,6 +45,6 @@ there are 7 test cases added using junit 5.
 - TestDelete: tests the delete function to make sure it works and tries to delete when there is no file (sometimes the delete have some permission errors).
 - TestFilter: testing the filter function with every possible field.
 - TestList: testing the listing function matches the data in the file.
-- TestSort: testing the sort function with every possible field.
+- TestSort: testing the sort function with every possible field where every field have a diffrent output to make sure all fields work.
 - TestUpdate: testing the update function and making sure it updates in the file.
 - TestUpdateSort: testing the sort function after update function to make sure they work together.
