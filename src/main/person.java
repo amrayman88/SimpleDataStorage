@@ -1,4 +1,4 @@
-package testing;
+package main;
 import java.util.Comparator;
 
 public class person {
