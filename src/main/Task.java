@@ -242,6 +242,8 @@ public class Task {
 				String field = scanner.nextLine();
 
 				sort_persons(field);
+				
+				System.out.println("persons sorted successfully");
 			} else if (in.toLowerCase().equals("update")) {
 				System.out.println("please choose the number of the person you want to update:");
 				int index = scanner.nextInt();
@@ -269,8 +271,10 @@ public class Task {
 
 				update_person(index, first_name, last_name, title, phone, mail, age);
 
-				System.out.println("person added successfully");
+				System.out.println("persons updated successfully");
 
+			} else {
+				System.out.println("please enter a valid command");
 			}
 		}
 		scanner.close();
