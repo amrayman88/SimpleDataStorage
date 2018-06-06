@@ -21,7 +21,7 @@ first you can change the path of the JSON file and the CSV file in Task class co
 
 by default you are using the JSON file.
 
-you have 6 comands available to you when you run the program.
+you have 9 comands available to you when you run the program.
 
 ### add 
 here you can add a person's data to the file, after entering add you will be asked to enter the data of the person.
