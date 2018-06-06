@@ -1,14 +1,25 @@
 # simple data storage
 
-a simple data storage for persons data in JSON file
+a simple data storage for persons data in JSON file or CSV file.
 
 ## Dependencies
 
-to run this code you need a java IDE and you need to add json simple to your project download .jar from [here](http://www.java2s.com/Code/Jar/j/Downloadjsonsimple11jar.htm/) then add the .jar file to your project liberaries.
+to run this code you need a java IDE.
+
+and for JSON "json simple" is used, to add it to your project download .jar from [here](http://www.java2s.com/Code/Jar/j/Downloadjsonsimple11jar.htm/) then add the .jar file to your project liberaries.
+
+and to use CSV you need to add openCSV and it's dependencies to your project which can be downloaded form here:
+- [openCSV](https://sourceforge.net/projects/opencsv/files/?source=navbar)
+- [Apache Commons Lang](https://mvnrepository.com/artifact/org.apache.commons/commons-lang3/3.6)
+- [Apache Commons Text](https://mvnrepository.com/artifact/org.apache.commons/commons-text/1.1)
+- [Apache Commons BeanUtils](https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils/1.9.3)
+- [Apache Commons Logging](https://mvnrepository.com/artifact/commons-logging/commons-logging/1.2)
 
 ## Running
 
-first you can change the path of the JSON file in Task class constructor ( by default set to be in the same folder called data.json ) then run the project.
+first you can change the path of the JSON file and the CSV file in Task class constructor ( by default set to be in the same folder called data.json abd data.CSV) then run the project.
+
+by default you are using the JSON file.
 
 you have 6 comands available to you when you run the program.
 
@@ -30,6 +41,15 @@ here you will choose the field that you want the data to be sorted accourding to
 ### delete
 here you can delete the file.
 
+### change format
+changes the current format, if the format used is CSV the new format will be JSON and vice versa.
+
+### check format
+check the current format being used.
+
+### quit
+exit the application.
+
 **Please note that the fields available are**
 - first name
 - last name
@@ -39,7 +59,7 @@ here you can delete the file.
 - age
 
 ### Testing
-there are 7 test cases added using junit 5.
+there are 7 test cases added using junit 5 each has a test for the JSON and CSV format.
 
 - TestAdd: tests the adding function to make sure it works.
 - TestDelete: tests the delete function to make sure it works and tries to delete when there is no file (sometimes the delete have some permission errors).

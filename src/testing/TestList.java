@@ -7,6 +7,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -15,6 +18,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.junit.jupiter.api.Test;
+
+import com.opencsv.CSVReader;
 
 class TestList {
 
@@ -26,7 +31,7 @@ class TestList {
 		assertEquals(experson.phone, tstperson.phone);
 		assertEquals(experson.title, tstperson.title);
 	}
-	
+
 	private static person make_person(JSONObject tmp) {
 
 		String first_name = (String) tmp.get("First name");
@@ -40,13 +45,13 @@ class TestList {
 		person ans = new person(first_name, last_name, title, phone, mail, age);
 		return ans;
 	}
-	
+
 	private static Vector jsonload(String path) {
 		Vector v = new Vector();
 
 		JSONParser parser = new JSONParser();
 		File file = new File(path);
-		if(!file.exists())
+		if (!file.exists())
 			return v;
 		try {
 			Object obj = parser.parse(new FileReader(path));
@@ -73,27 +78,65 @@ class TestList {
 		return v;
 	}
 
+	private static Vector csvload(String pathCSV) {
+		Vector v = new Vector();
+		File file = new File(pathCSV);
+		if (!file.exists())
+			return v;
+		try (Reader reader = Files.newBufferedReader(Paths.get(pathCSV));
+				CSVReader csvReader = new CSVReader(reader);) {
+			// Reading Records One by One in a String array
+			String[] nextRecord;
+			while ((nextRecord = csvReader.readNext()) != null) {
+				person tmp = new person(nextRecord[0], nextRecord[1], nextRecord[2], nextRecord[3], nextRecord[4],
+						Integer.parseInt(nextRecord[5]));
+				v.add(tmp);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return v;
+	}
 
 	
 	@Test
 	void test_list() {
-		Task test = new Task("D:\\test.json");
-		
+		Task test = new Task();
+
 		test.delete_persons();
-		
+
 		test.add_person("omar", "ahmed", "old", "011111111", "omar@gmail.com", 20);
 		test.add_person("amr", "ayman", "new", "012222222", "amr@gmail.com", 21);
-		
-		
+
 		Vector exv = new Vector();
 		Vector tstv = new Vector();
-		
-		exv=test.list_persons();
-		tstv=jsonload(test.path);
-		
-		for(int i=0;i<exv.size();i++)
-		{
-			assertPerson((person)exv.elementAt(i),(person)tstv.elementAt(i));
+
+		exv = test.list_persons();
+		tstv = jsonload(test.pathJSON);
+
+		for (int i = 0; i < exv.size(); i++) {
+			assertPerson((person) exv.elementAt(i), (person) tstv.elementAt(i));
+		}
+	}
+
+	@Test
+	void test_list_CSV() {
+		Task test = new Task();
+		test.file_type = true;
+
+		test.delete_persons();
+
+		test.add_person("omar", "ahmed", "old", "011111111", "omar@gmail.com", 20);
+		test.add_person("amr", "ayman", "new", "012222222", "amr@gmail.com", 21);
+
+		Vector exv = new Vector();
+		Vector tstv = new Vector();
+
+		exv = test.list_persons();
+		tstv = csvload(test.pathCSV);
+
+		for (int i = 0; i < exv.size(); i++) {
+			assertPerson((person) exv.elementAt(i), (person) tstv.elementAt(i));
 		}
 	}
 

@@ -1,5 +1,7 @@
 package main;
+
 import java.util.*;
+import com.opencsv.*;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
@@ -9,17 +11,21 @@ import java.io.*;
 import java.nio.file.*;
 
 public class Task {
-	
-	public static String path;
-	
-	public Task()
-	{
-		path="data.json";
+
+	public static boolean file_type;
+
+	public static String pathJSON, pathCSV;
+
+	public Task() {
+		pathJSON = "data.json";
+		pathCSV = "data.csv";
+		file_type = false;
 	}
-	
-	public Task(String _path)
-	{
-		path=_path;
+
+	public Task(String _pathJSON, String _pathCSV, boolean _file_type) {
+		pathJSON = _pathJSON;
+		pathCSV = _pathCSV;
+		file_type = _file_type;
 	}
 
 	private static JSONObject make_jsonobj(person tmp) {
@@ -48,11 +54,11 @@ public class Task {
 		return obj;
 	}
 
-	private static void creat_file(Vector v) {
+	private static void creat_file_JSON(Vector v) {
 		JSONObject obj = new JSONObject();
 		obj = make_jsonarr(v);
 
-		try (FileWriter file = new FileWriter(path)) {
+		try (FileWriter file = new FileWriter(pathJSON)) {
 
 			file.write(obj.toJSONString());
 			file.flush();
@@ -62,7 +68,23 @@ public class Task {
 		}
 	}
 
-	private static person make_person(JSONObject tmp) {
+	private static void creat_file_CSV(Vector v) {
+		try (Writer writer = Files.newBufferedWriter(Paths.get(pathCSV));
+
+				CSVWriter csvWriter = new CSVWriter(writer, CSVWriter.DEFAULT_SEPARATOR, CSVWriter.NO_QUOTE_CHARACTER,
+						CSVWriter.DEFAULT_ESCAPE_CHARACTER, CSVWriter.DEFAULT_LINE_END);) {
+			for (int i = 0; i < v.size(); i++) {
+				person tmpp = (person) v.elementAt(i);
+				String[] tmp = new String[] { tmpp.first_name, tmpp.last_name, tmpp.title, tmpp.phone, tmpp.mail,
+						String.valueOf(tmpp.age) };
+				csvWriter.writeNext(tmp);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static person make_person_JSON(JSONObject tmp) {
 
 		String first_name = (String) tmp.get("First name");
 		String last_name = (String) tmp.get("Last name");
@@ -80,11 +102,11 @@ public class Task {
 		Vector v = new Vector();
 
 		JSONParser parser = new JSONParser();
-		File file = new File(path);
-		if(!file.exists())
+		File file = new File(pathJSON);
+		if (!file.exists())
 			return v;
 		try {
-			Object obj = parser.parse(new FileReader(path));
+			Object obj = parser.parse(new FileReader(pathJSON));
 
 			JSONObject jsonObject = (JSONObject) obj;
 
@@ -93,7 +115,7 @@ public class Task {
 			Iterator<JSONObject> iterator = persons.iterator();
 			while (iterator.hasNext()) {
 				JSONObject tmp = iterator.next();
-				person ans = make_person(tmp);
+				person ans = make_person_JSON(tmp);
 				v.add(ans);
 			}
 
@@ -111,18 +133,27 @@ public class Task {
 	public static Vector add_person(String first_name, String last_name, String title, String phone, String mail,
 			int age) {
 		Vector v = new Vector();
-		v = jsonload();
+
+		if (file_type)
+			v = csvload();
+		else
+			v = jsonload();
 
 		v.add(new person(first_name, last_name, title, phone, mail, age));
 
-		creat_file(v);
-		
+		if (file_type)
+			creat_file_CSV(v);
+		else
+			creat_file_JSON(v);
 		return v;
 	}
 
 	public static Vector list_persons() {
 		Vector v = new Vector();
-		v = jsonload();
+		if (file_type)
+			v = csvload();
+		else
+			v = jsonload();
 
 		for (int i = 0; i < v.size(); i++) {
 			System.out.println("Person #" + String.valueOf(i) + ":");
@@ -132,9 +163,33 @@ public class Task {
 		return v;
 	}
 
+	private static Vector csvload() {
+		Vector v = new Vector();
+		File file = new File(pathCSV);
+		if (!file.exists())
+			return v;
+		try (Reader reader = Files.newBufferedReader(Paths.get(pathCSV));
+				CSVReader csvReader = new CSVReader(reader);) {
+			// Reading Records One by One in a String array
+			String[] nextRecord;
+			while ((nextRecord = csvReader.readNext()) != null) {
+				person tmp = new person(nextRecord[0], nextRecord[1], nextRecord[2], nextRecord[3], nextRecord[4],
+						Integer.parseInt(nextRecord[5]));
+				v.add(tmp);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return v;
+	}
+
 	public static Vector filter_persons(String field) {
 		Vector v = new Vector();
-		v = jsonload();
+
+		if (file_type)
+			v = csvload();
+		else
+			v = jsonload();
 
 		Vector ans = new Vector();
 
@@ -150,7 +205,11 @@ public class Task {
 
 	public static void sort_persons(String field) {
 		Vector v = new Vector();
-		v = jsonload();
+
+		if (file_type)
+			v = csvload();
+		else
+			v = jsonload();
 
 		if (field.toLowerCase().equals("first name"))
 			Collections.sort(v, person.personfirstnamecomp);
@@ -164,22 +223,36 @@ public class Task {
 			Collections.sort(v, person.personmailcomp);
 		if (field.toLowerCase().equals("age"))
 			Collections.sort(v, person.personagecomp);
-		creat_file(v);
+
+		if (file_type)
+			creat_file_CSV(v);
+		else
+			creat_file_JSON(v);
 	}
 
 	public static void update_person(int index, String first_name, String last_name, String title, String phone,
 			String mail, int age) {
 		Vector v = new Vector();
-		v = jsonload();
+
+		if (file_type)
+			v = csvload();
+		else
+			v = jsonload();
 
 		v.setElementAt(new person(first_name, last_name, title, phone, mail, age), index);
 
-		creat_file(v);
+		if (file_type)
+			creat_file_CSV(v);
+		else
+			creat_file_JSON(v);
 	}
 
 	public static void delete_persons() {
 		try {
-			Files.delete(Paths.get(path));
+			if (file_type)
+				Files.delete(Paths.get(pathCSV));
+			else
+				Files.delete(Paths.get(pathJSON));
 			System.out.println("Deletion successful.");
 		} catch (NoSuchFileException e) {
 			System.out.println("No such file/directory exists");
@@ -189,10 +262,9 @@ public class Task {
 			System.out.println("Invalid permissions.");
 		}
 	}
-	
+
 	public static void main(String[] args) {
-		path="D:\\list.json";
-		
+
 		Scanner scanner = new Scanner(System.in);
 		Vector v = new Vector();
 
@@ -222,6 +294,7 @@ public class Task {
 
 				System.out.println("enter the age:");
 				age = scanner.nextInt();
+				scanner.nextLine();
 
 				add_person(first_name, last_name, title, phone, mail, age);
 
@@ -242,7 +315,7 @@ public class Task {
 				String field = scanner.nextLine();
 
 				sort_persons(field);
-				
+
 				System.out.println("persons sorted successfully");
 			} else if (in.toLowerCase().equals("update")) {
 				System.out.println("please choose the number of the person you want to update:");
@@ -273,10 +346,26 @@ public class Task {
 
 				System.out.println("persons updated successfully");
 
+			} else if (in.toLowerCase().equals("change format")) {
+				file_type = !file_type;
+				if (file_type) {
+					System.out.println("CSV file is now used");
+					v = csvload();
+				} else {
+					System.out.println("JSON file is now used");
+					v = jsonload();
+				}
+
+			} else if (in.toLowerCase().equals("check format")) {
+				if(file_type)
+					System.out.println("CSV is being used");
+				else
+					System.out.println("JSON is being used");
 			} else {
 				System.out.println("please enter a valid command");
 			}
 		}
+		System.out.println("Thanks, bye :)");
 		scanner.close();
 	}
 

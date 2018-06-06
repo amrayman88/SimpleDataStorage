@@ -7,6 +7,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -15,6 +18,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.junit.jupiter.api.Test;
+
+import com.opencsv.CSVReader;
 
 class TestUpdate {
 
@@ -73,9 +78,29 @@ class TestUpdate {
 		return v;
 	}
 
+	private static Vector csvload(String pathCSV) {
+		Vector v = new Vector();
+		File file = new File(pathCSV);
+		if (!file.exists())
+			return v;
+		try (Reader reader = Files.newBufferedReader(Paths.get(pathCSV));
+				CSVReader csvReader = new CSVReader(reader);) {
+			// Reading Records One by One in a String array
+			String[] nextRecord;
+			while ((nextRecord = csvReader.readNext()) != null) {
+				person tmp = new person(nextRecord[0], nextRecord[1], nextRecord[2], nextRecord[3], nextRecord[4],
+						Integer.parseInt(nextRecord[5]));
+				v.add(tmp);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return v;
+	}
+
 	@Test
 	void test_update() {
-		Task test = new Task("D:\\test.json");
+		Task test = new Task();
 		Vector v = new Vector();
 
 		test.delete_persons();
@@ -84,7 +109,26 @@ class TestUpdate {
 		test.add_person("amr", "ayman", "new", "012222222", "amr@gmail.com", 21);
 
 		test.update_person(0, "ahmed", "omar", "junior", "01555555", "ahmed@gmail.com", 23);
-		v = jsonload(test.path);
+		v = jsonload(test.pathJSON);
+
+		person tstperson = (person) v.elementAt(0);
+		person experson = new person("ahmed", "omar", "junior", "01555555", "ahmed@gmail.com", 23);
+		assertPerson(experson, tstperson);
+	}
+
+	@Test
+	void test_update_CSV() {
+		Task test = new Task();
+		test.file_type = true;
+		Vector v = new Vector();
+
+		test.delete_persons();
+
+		test.add_person("omar", "ahmed", "old", "011111111", "omar@gmail.com", 20);
+		test.add_person("amr", "ayman", "new", "012222222", "amr@gmail.com", 21);
+
+		test.update_person(0, "ahmed", "omar", "junior", "01555555", "ahmed@gmail.com", 23);
+		v = csvload(test.pathCSV);
 
 		person tstperson = (person) v.elementAt(0);
 		person experson = new person("ahmed", "omar", "junior", "01555555", "ahmed@gmail.com", 23);
